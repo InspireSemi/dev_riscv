@@ -30,11 +30,11 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
   cpio \
   unzip \
   rsync \
-  bc
+  bc \
+  cmake
 
 # Make a working folder and set the necessary environment variables.
 ENV RISCV /opt/riscv64
-ENV NUMJOBS 1
 RUN mkdir -p $RISCV
 
 # Add the GNU utils bin folder to the path.
