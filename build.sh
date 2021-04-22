@@ -1,4 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
-sudo docker build --rm -t mkarasek/inspire_dev:$1 .
+if [ $# -eq 0 ]
+  then
+    echo "Must Specify the docker image name and docker file "
+    echo "Usage: build.sh <name:version> <dockerfile>"
+    exit 1
+fi
+
+sudo docker build --rm -t $1 . -f $2
 

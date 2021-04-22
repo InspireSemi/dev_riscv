@@ -1,6 +1,14 @@
 #!/bin/bash
 
+if [ $# -eq 0 ]
+  then
+    echo "Must Specify the docker image to run "
+    echo "Usage: docker.sh <imagename:version>"
+    echo "imagename can be a local docker image or one from docker hub"
+    exit 1
+fi
+
 GROUP=$(id -g $USER)
 USER=$(id -u $USER)
 
-sudo docker run -it --user ${USER}:${GROUP} -v $(pwd):/source mkarasek/inspire_dev:$1
+sudo docker run -it --user ${USER}:${GROUP} -v $(pwd):/source $1
