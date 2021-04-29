@@ -4,7 +4,7 @@ LABEL maintainer = "Marc Karasek"
 
 # Install some base tools that we will need to get the risc-v
 # toolchain working.
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
   autoconf \
   automake \
   autotools-dev \
@@ -31,7 +31,11 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
   unzip \
   rsync \
   bc \
-  cmake
+  cmake \
+  python3-pip \
+  python-dev
+
+RUN apt-get clean 
 
 # Make a working folder and set the necessary environment variables.
 ENV RISCV /opt/riscv64
@@ -41,10 +45,19 @@ RUN mkdir -p $RISCV
 ENV PATH $RISCV/bin:$PATH
 
 # Checkout the tag that was used for the build.  This will set the submodules in the repo properly
-RUN git clone https://github.com/riscv/riscv-gnu-toolchain && cd ./riscv-gnu-toolchain && \
+RUN git clone https://github.com/riscv/riscv-gnu-toolchain.git && cd ./riscv-gnu-toolchain && \
 git checkout master && \
-git submodule init && git submodule update
+git submodule update --init riscv-binutils && \
+git submodule update --init riscv-dejagnu && \
+git submodule update --init riscv-gcc && \
+git submodule update --init riscv-glibc && \
+git submodule update --init riscv-newlib && \
+git submodule update --init riscv-gdb
 
+# Use this if you need qemu also above are all submodules minus qemu
+#git submodule init && git submodule update
+
+# Use this for v9.2.0 of GCC
 #git checkout b426ddd55c1e8cfc6ed991e8cdeca873f5ab2c17 && \
 
 # configure and build the tools 

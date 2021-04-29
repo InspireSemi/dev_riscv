@@ -8,7 +8,7 @@ ENV TZ=America/New_York
 
 # Install some base tools that we will need to get the risc-v
 # toolchain working.
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
   autoconf \
   automake \
   autotools-dev \
@@ -39,8 +39,11 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
   device-tree-compiler \
   opam \
   z3 \
-  pkg-config
+  pkg-config \
+  python3-pip \
+  python-dev
 
+RUN apt-get clean
 
 # Make a working folder and set the necessary environment variables.
 ENV RISCV /opt/riscv64
@@ -52,7 +55,14 @@ ENV PATH $RISCV/bin:$PATH
 # Checkout the tag that was used for the build.  This will set the submodules in the repo properly
 RUN git clone https://github.com/riscv/riscv-gnu-toolchain && cd ./riscv-gnu-toolchain && \
 git checkout master && \
-git submodule init && git submodule update
+git submodule update --init riscv-binutils && \
+git submodule update --init riscv-dejagnu && \
+git submodule update --init riscv-gcc && \
+git submodule update --init riscv-glibc && \
+git submodule update --init riscv-newlib && \
+git submodule update --init riscv-gdb
+
+#git submodule init && git submodule update
 
 #git checkout b426ddd55c1e8cfc6ed991e8cdeca873f5ab2c17 && \
 
@@ -63,11 +73,11 @@ make newlib -j 4 && make linux -j 4
 
 # Sanity check to make sure tools are compiled and PATH is set properly
 RUN riscv64-unknown-linux-gnu-gcc --version && riscv64-unknown-elf-gcc --version
-# Change default shell to bash instead of dash
+# Switch shell to bash for image
 RUN ln -sf /bin/bash /bin/sh
 
-WORKDIR /
 # cleanup build dir to make docker image smaller 
+WORKDIR /
 RUN rm -rf riscv-gnu-toolchain
 
 #install spike
@@ -75,16 +85,19 @@ RUN git clone https://github.com/riscv/riscv-isa-sim.git
 WORKDIR ./riscv-isa-sim
 RUN mkdir build && cd build && ../configure --prefix=$RISCV && make && make install 
 
+# cleanup build dir to make docker image smaller 
 WORKDIR /
 RUN rm -rf riscv-isa-sim
 
 #install SAIL using opam
-RUN opam init --disable-sandboxing --yes && opam switch create ocaml-base-compiler.4.06.1 && eval $(opam config env) && opam install sail --yes
+ENV INSTALL_DIR /usr/
+RUN opam init --disable-sandboxing --yes && \
+opam switch create ocaml-base-compiler.4.06.1 && \
+eval $(opam config env) && opam install sail --yes && \
+eval $(opam env) && \
+git clone https://github.com/rems-project/sail-riscv.git && \
+cd sail-riscv && \
+make opam-build && \
+make opam-install 
 
-
-# Run this docker image now with the dev_riscv as a volume. 
-# cd into spike_sail
-# execute the sailbuild.sh script
-# After sail-riscv is done building/installed remove the repo
-# Use docker commit to create a new image from the running container with riscv-sail installed
-# docker commmit -m "commit msg" -a "author" <image ID> <new image name:version>
+# We are done!
