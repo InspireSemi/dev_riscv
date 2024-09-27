@@ -7,5 +7,5 @@ if [ $# -eq 0 ]
     exit 1
 fi
 
-sudo docker build --rm -t $1 . -f $2
+sudo podman build --rm -t $1 . -f $2
 
