@@ -11,4 +11,5 @@ fi
 GROUP=$(id -g $USER)
 USER=$(id -u $USER)
 
-sudo podman run -it --user ${USER}:${GROUP} -v $(pwd):/source $1
+sudo podman run --log-level=debug -it --user ${USER}:${GROUP} -v $(pwd):/source $1
+
