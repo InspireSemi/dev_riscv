@@ -1,0 +1,52 @@
+FROM ubuntu:22.04
+LABEL maintainer = "Marc Karasek"
+
+# Install some base tools that we will need to get the risc-v toolchain working.
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+  autoconf \
+  automake \
+  apt-utils \
+  autotools-dev \
+  bison \
+  build-essential \
+  curl \
+  flex \
+  gawk \
+  git \
+  gperf \
+  libmpc-dev \
+  libmpfr-dev \
+  libgmp-dev \
+  libtool \
+  patchutils \
+  texinfo \
+  make \
+  gcc \
+  python3 \
+  zlib1g-dev \
+  libexpat-dev \
+  wget \
+  cpio \
+  unzip \
+  rsync \
+  bc \
+  cmake \
+  python3-pip \
+  python-dev-is-python3 \
+  fakeroot \
+  ninja-build \
+  vim
+
+RUN apt-get clean 
+
+RUN mkdir -p /scripts
+COPY crosstools/oecore-baseimage-x86_64-riscv64-thunderbird-thunderbolt-toolchain-nodistro.0.sh /scripts
+WORKDIR /scripts
+RUN chmod +x oecore-baseimage-x86_64-riscv64-thunderbird-thunderbolt-toolchain-nodistro.0.sh
+RUN ./oecore-baseimage-x86_64-riscv64-thunderbird-thunderbolt-toolchain-nodistro.0.sh
+
+RUN rm -rf oecore-baseimage-x86_64-riscv64-thunderbird-thunderbolt-toolchain-nodistro.0.sh
+RUN pwd
+RUN ls
+
+# We are done.
