@@ -1,0 +1,2 @@
+sudo podman login docker.io
+sudo podman push docker.io/inspiresemi/riscvtools/<imagename>:<tag>
