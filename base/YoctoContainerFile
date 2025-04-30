@@ -1,9 +1,10 @@
 FROM ubuntu:22.04
-LABEL maintainer = "Marc Karasek"
+LABEL maintainer = "Michael White"
 
-ENV TZ=America/New_York
+
+ENV TZ=America/Chicago
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
+RUN yes | unminimize
 
 # Install some base tools that we will need. Initial list from Michael White and has been added too.
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
@@ -54,9 +55,28 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
   python3-sphinx-rtd-theme \
   vim \
   tmux \
-  man
+  man \
+  cscope \
+  universal-ctags \
+  libncurses5-dev \
+  libx11-dev \
+  libxt-dev \
+  libmotif-dev \
+  libxaw7-dev \
+  gdb \
+  ssh
 
 RUN pip3 install kas 
+
+WORKDIR /root
+RUN wget https://ftp.gnu.org/gnu/ddd/ddd-3.4.1.tar.gz
+RUN tar -zxvf ddd-3.4.1.tar.gz
+WORKDIR /root/ddd-3.4.1
+RUN ./configure
+RUN make
+RUN make install
+WORKDIR /root
+RUN rm -rf ddd-3.4.1
 
 RUN touch /usr/share/locale/locale.alias
 #RUN locale-gen "en_US.UTF-8"
@@ -68,6 +88,5 @@ RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
 ENV LANG=en_US.UTF-8 \ LANGUAGE=en_US \ LC_ALL=en_US.UTF-8
 
 RUN apt-get clean 
-
 
 # We are done.
