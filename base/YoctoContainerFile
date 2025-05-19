@@ -64,10 +64,12 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
   libmotif-dev \
   libxaw7-dev \
   gdb \
-  ssh
+  ssh \
+  gfortran
 
 RUN pip3 install kas 
 
+# Add DDD
 WORKDIR /root
 RUN wget https://ftp.gnu.org/gnu/ddd/ddd-3.4.1.tar.gz
 RUN tar -zxvf ddd-3.4.1.tar.gz
@@ -77,6 +79,7 @@ RUN make
 RUN make install
 WORKDIR /root
 RUN rm -rf ddd-3.4.1
+RUN rm ddd-3.4.1.tar.gz
 
 RUN touch /usr/share/locale/locale.alias
 #RUN locale-gen "en_US.UTF-8"
