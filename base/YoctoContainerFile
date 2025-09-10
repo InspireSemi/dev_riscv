@@ -65,7 +65,10 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
   libxaw7-dev \
   gdb \
   ssh \
-  gfortran
+  gfortran \
+  less \
+  bvi \
+  xterm
 
 RUN pip3 install kas 
 
