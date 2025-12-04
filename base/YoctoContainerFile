@@ -68,7 +68,10 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
   gfortran \
   less \
   bvi \
-  xterm
+  xterm \
+  qemu-system \
+  qemu-utils \
+  qemu-system-gui
 
 RUN pip3 install kas 
 
